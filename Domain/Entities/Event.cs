@@ -8,9 +8,15 @@ namespace Domain.Entities
 {
     public class Event
     {
-        public int Id { get; set; }
+        public int Id { get; set; } //PK
+        public string Name { get; set; } = string.Empty;
 
+        public DateTime EventDate { get; set; }
+        public string Venue { get; set; } = string.Empty;
+        public string Status { get; set; } = string.Empty;
 
+        // Relación: Un evento "tiene" muchos sectores
+        public List<Sector> Sectors { get; set; } = [];
 
     }
 }
