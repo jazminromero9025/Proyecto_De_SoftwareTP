@@ -11,7 +11,14 @@ namespace Domain.Entities
         public int Id { get; set; } //pk
         public int EventId { get; set; } // FK hacia Evento
 
+        public string Name { get; set; } = string.Empty;
 
+        public decimal Price { get; set; }
+
+        public int Capacity { get; set; }
+
+        // Relación: Un sector tiene muchas butacas [cite: 91]
+        public List<Butaca> Butacas { get; set; }
 
     }
 }
