@@ -1,4 +1,18 @@
+using Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Win32;
+
 var builder = WebApplication.CreateBuilder(args);
+
+// Obtener cadena de conexión
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+// Registrar DbContext
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlServer(connectionString));
+
+
+
 
 // Add services to the container.
 
