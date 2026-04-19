@@ -17,8 +17,9 @@ namespace Domain.Entities
 
         public int Capacity { get; set; }
 
-        // Relación: Un sector tiene muchas butacas [cite: 91]
-        public List<Butaca> Butacas { get; set; }
+        // Relación: Un sector "contiene" muchas butacas
+        public List<Seat> Seats { get; set; } = [];
+
 
     }
 }
