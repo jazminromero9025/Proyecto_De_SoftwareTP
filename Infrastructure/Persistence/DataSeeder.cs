@@ -26,6 +26,7 @@ namespace Infrastructure.Persistence
             // ── EVENTO ──────────────────────────────────────────────────
             var evento = new Event
             {
+                
                 Name = "Concierto de Rock",
                 EventDate = DateTime.UtcNow.AddDays(30),
                 Venue = "Estadio River Plate",
