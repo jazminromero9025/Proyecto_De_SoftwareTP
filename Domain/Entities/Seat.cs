@@ -20,5 +20,11 @@ namespace Domain.Entities
         public int Version { get; set; } // Control de concurrencia
 
 
+        // Propiedad de navegación (La que dibuja la línea en SQL)
+        public virtual Sector Sector { get; set; } = null!;
+
+        // Una butaca puede estar en muchas reservas (historial)
+        public virtual List<Reservation> Reservations { get; set; } = [];
+
     }
 }

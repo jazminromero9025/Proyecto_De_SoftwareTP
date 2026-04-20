@@ -30,15 +30,62 @@ namespace Infrastructure.Persistence
         {
             base.OnModelCreating(modelBuilder);
 
-            // Concurrencia para la butaca usando el int del diagrama
+            // 1. RELACIONES (Las "flechitas" del diagrama)
+
+            // EVENTO -> SECTOR
+            modelBuilder.Entity<Sector>()
+                .HasOne(s => s.Event)
+                .WithMany(e => e.Sectors)
+                .HasForeignKey(s => s.EventId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // SECTOR -> SEAT
+            modelBuilder.Entity<Seat>()
+                .HasOne(s => s.Sector)
+                .WithMany(sec => sec.Seats)
+                .HasForeignKey(s => s.SectorId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // SEAT -> RESERVATION (Se asigna a)
+            modelBuilder.Entity<Reservation>()
+                .HasOne(r => r.Seat)
+                .WithMany(s => s.Reservations)
+                .HasForeignKey(r => r.SeatId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // USER -> RESERVATION (Realiza)
+            modelBuilder.Entity<Reservation>()
+                .HasOne(r => r.User)
+                .WithMany(u => u.Reservations)
+                .HasForeignKey(r => r.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // USER -> AUDIT_LOG (Genera)
+            modelBuilder.Entity<AuditLog>()
+                .HasOne(a => a.User)
+                .WithMany(u => u.AuditLogs)
+                .HasForeignKey(a => a.UserId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            // 2. CONFIGURACIONES ESPECIALES (Precisiones y Concurrencia)
             modelBuilder.Entity<Seat>()
                 .Property(s => s.Version)
                 .IsConcurrencyToken();
 
-            // Configuración de precisión para el precio
             modelBuilder.Entity<Sector>()
                 .Property(s => s.Price)
                 .HasPrecision(18, 2);
+
+            // 3. NOMBRES DE TABLAS EN SINGULAR (Identico al diagrama del profe)
+            modelBuilder.Entity<Event>().ToTable("EVENT");
+            modelBuilder.Entity<Sector>().ToTable("SECTOR");
+            modelBuilder.Entity<Seat>().ToTable("SEAT");
+            modelBuilder.Entity<User>().ToTable("USER");
+            modelBuilder.Entity<Reservation>().ToTable("RESERVATION");
+            modelBuilder.Entity<AuditLog>().ToTable("AUDIT_LOG");
+
+            //precargade datos abajo
+           
         }
 
 
