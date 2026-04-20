@@ -10,10 +10,10 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Application.Interfaces
 {
-    public class ISeatRepository
+    public interface ISeatRepository
     {
         // El repositorio recibe el objeto Query completo
-        Task<IEnumerable<Seat>> GetSeatsBySectorQueryAsnyc(GetSeatsBySectorQuery query);
+        Task<IEnumerable<Seat>> GetSeatsBySectorQueryAsync(GetSeatsBySectorQuery query);
 
     }
 }
