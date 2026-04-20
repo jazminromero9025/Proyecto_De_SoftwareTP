@@ -19,4 +19,12 @@
     <ProjectReference Include="..\Application\Application.csproj" />
   </ItemGroup>
 
+<<<<<<< HEAD
+=======
+  <ItemGroup>
+    <Folder Include="Migrations\" />
+    <Folder Include="Repositories\" />
+  </ItemGroup>
+
+>>>>>>> b540d9338bc2364a54d3c1d1f1f94e42d93f6942
 </Project>

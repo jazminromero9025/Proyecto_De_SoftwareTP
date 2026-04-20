@@ -84,7 +84,6 @@ namespace Infrastructure.Persistence
             modelBuilder.Entity<Reservation>().ToTable("RESERVATION");
             modelBuilder.Entity<AuditLog>().ToTable("AUDIT_LOG");
 
-            //precargade datos abajo
            
         }
 
