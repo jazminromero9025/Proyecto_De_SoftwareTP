@@ -32,7 +32,7 @@ namespace Application.Services
             return seats.Select(s => new SeatDto
             {
                 Id = s.Id,
-                Number = s.Number,
+                Number = s.SeatNumber,
                 Status = s.Status.ToString()
             }).ToList();
         }
