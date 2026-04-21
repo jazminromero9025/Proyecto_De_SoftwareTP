@@ -1,8 +1,19 @@
+using Application.Interfaces;
+using Application.Services;
+using Infraestructure.Repositories;
 using Infrastructure.Persistence;
+using Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Win32;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// "Cada vez que alguien pida un ISeatRepository, dale un SeatRepository"
+builder.Services.AddScoped<ISeatRepository, SeatRepository>();
+
+builder.Services.AddScoped<ISeatService, SeatService>();
+
+builder.Services.AddScoped<IEventRepository, EventRepository>();
 
 // Obtener cadena de conexión
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
