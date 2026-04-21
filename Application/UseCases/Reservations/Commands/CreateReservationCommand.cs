@@ -1,0 +1,20 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Application.UseCases.Reservations.Commands
+{
+    public class CreateReservationCommand
+    {
+        public Guid SeatId { get; set; }
+        public int UserId { get; set; }
+
+        public CreateReservationCommand(Guid seatId, int userId)
+        {
+            SeatId = seatId;
+            UserId = userId;
+        }
+    }
+}
