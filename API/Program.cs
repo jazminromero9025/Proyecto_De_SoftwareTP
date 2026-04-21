@@ -15,6 +15,12 @@ builder.Services.AddScoped<ISeatService, SeatService>();
 
 builder.Services.AddScoped<IEventRepository, EventRepository>();
 
+// Registrar el Repositorio
+builder.Services.AddScoped<ISectorRepository, SectorRepository>();
+
+// Registrar el Service
+builder.Services.AddScoped<ISectorService, SectorService>();
+
 // Obtener cadena de conexión
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
