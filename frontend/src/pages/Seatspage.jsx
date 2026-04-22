@@ -1,24 +1,39 @@
 ﻿import { useEffect, useState } from "react";
 
 const API = "https://localhost:7016";
-const USER_ID = 1; // usuario de prueba
+const USER_ID = 1;
 
 export default function SeatsPage({ event, onBack }) {
-    const [seats, setSeats] = useState([]);
+    const [sectors, setSectors] = useState([]);
+    const [seatsBySector, setSeatsBySector] = useState({});
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [reserving, setReserving] = useState(null);
     const [message, setMessage] = useState(null);
 
-    const fetchSeats = () => {
-        setLoading(true);
-        fetch(`${API}/api/v1/sectors/${event.sectorId}/seats`)
-            .then((r) => r.json())
-            .then((data) => { setSeats(data); setLoading(false); })
-            .catch(() => { setError("No se pudo cargar el mapa de asientos."); setLoading(false); });
+    const fetchSeats = async (sectorList) => {
+        const result = {};
+        for (const sector of sectorList) {
+            const res = await fetch(`${API}/api/v1/sectors/${sector.id}/seats`);
+            const data = await res.json();
+            result[sector.name] = data;
+        }
+        setSeatsBySector(result);
     };
 
-    useEffect(() => { fetchSeats(); }, [event.id]);
+    useEffect(() => {
+        fetch(`${API}/api/Sector/event/${event.id}`)
+            .then((r) => r.json())
+            .then(async (data) => {
+                setSectors(data);
+                await fetchSeats(data);
+                setLoading(false);
+            })
+            .catch(() => {
+                setError("No se pudo cargar el mapa de asientos.");
+                setLoading(false);
+            });
+    }, [event.id]);
 
     const handleReserve = async (seat) => {
         if (seat.status !== "Available") return;
@@ -34,10 +49,10 @@ export default function SeatsPage({ event, onBack }) {
 
             if (res.ok) {
                 setMessage({ type: "success", text: `✅ Butaca ${seat.seatNumber} reservada exitosamente. Tenés 5 minutos para completar el pago.` });
-                fetchSeats(); // refresca el mapa
+                await fetchSeats(sectors);
             } else if (res.status === 409) {
                 setMessage({ type: "error", text: "⚠️ Esa butaca ya fue reservada por otro usuario." });
-                fetchSeats();
+                await fetchSeats(sectors);
             } else {
                 setMessage({ type: "error", text: "❌ No se pudo completar la reserva." });
             }
@@ -48,16 +63,9 @@ export default function SeatsPage({ event, onBack }) {
         }
     };
 
-    // Agrupar por sector
-    const bySector = seats.reduce((acc, seat) => {
-        const key = seat.sectorName || "Sin sector";
-        if (!acc[key]) acc[key] = [];
-        acc[key].push(seat);
-        return acc;
-    }, {});
-
-    const available = seats.filter((s) => s.status === "Available").length;
-    const total = seats.length;
+    const totalSeats = Object.values(seatsBySector).flat();
+    const available = totalSeats.filter((s) => s.status === "Available").length;
+    const total = totalSeats.length;
 
     return (
         <div className="page">
@@ -86,11 +94,11 @@ export default function SeatsPage({ event, onBack }) {
                 {loading && <p className="status">Cargando mapa de asientos...</p>}
                 {error && <p className="status error">{error}</p>}
 
-                {Object.entries(bySector).map(([sectorName, sectorSeats]) => (
+                {Object.entries(seatsBySector).map(([sectorName, seats]) => (
                     <div key={sectorName} className="sector">
                         <h3 className="sector-title">{sectorName}</h3>
                         <div className="seats-grid">
-                            {sectorSeats
+                            {seats
                                 .sort((a, b) => a.seatNumber - b.seatNumber)
                                 .map((seat) => (
                                     <button
