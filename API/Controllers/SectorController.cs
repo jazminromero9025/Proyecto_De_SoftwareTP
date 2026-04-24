@@ -9,7 +9,7 @@ namespace API.Controllers
 {
 
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/v1/events")]
     public class SectorController : ControllerBase
     {
 
@@ -21,7 +21,7 @@ namespace API.Controllers
             _sectorService = sectorService;
         }
 
-        [HttpGet("event/{eventId}")]
+        [HttpGet("{eventId}/sectors")] //("event/{eventId}")
         public async Task<ActionResult<List<SectorDto>>> GetByEvent(int eventId)
         {
             var sectors = await _sectorService.GetSectorsByEventAsync(eventId);

@@ -7,7 +7,7 @@ namespace API.Controllers
 {
 
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/v1/events")]
     public class EventsController : ControllerBase
     {
         private readonly IEventRepository _eventRepository;
