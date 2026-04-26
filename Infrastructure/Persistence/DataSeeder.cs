@@ -11,17 +11,20 @@ namespace Infrastructure.Persistence
         {
         public static void Seed(AppDbContext context)
         {
-            if (context.Events.Any()) return;
+            if (!context.Users.Any())
+            { 
 
-            // ── USUARIOS ────────────────────────────────────────────────
-            var users = new List<User>
-            {
-                new User { Name = "Juan Pérez", Email = "juan@test.com", PasswordHash = "hash123" },
-                new User { Name = "María García", Email = "maria@test.com", PasswordHash = "hash123" },
-                new User { Name = "Carlos López", Email = "carlos@test.com", PasswordHash = "hash123" },
-            };
-            context.Users.AddRange(users);
-            context.SaveChanges();
+                // ── USUARIOS ────────────────────────────────────────────────
+                var users = new List<User>
+              {
+                new User { Name = "Juan Pérez", Email = "juan@test.com", Role = "Customer",  PasswordHash = "hash123" },
+                new User { Name = "María García", Email = "maria@test.com", Role = "Customer",  PasswordHash = "hash123" },
+                new User { Name = "Carlos López", Email = "carlos@test.com", Role= "Administrador",  PasswordHash = "hash123" },
+              };
+                context.Users.AddRange(users);
+                context.SaveChanges();
+            }
+            if (context.Events.Any()) return;
 
             // ── EVENTO ──────────────────────────────────────────────────
             var evento = new Event
