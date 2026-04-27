@@ -1,4 +1,5 @@
 ﻿using Application.Models;
+using Application.UseCases.Events.Commands;
 using Domain.Entities;
 using System;
 using System.Collections.Generic;
@@ -12,6 +13,7 @@ namespace Application.Interfaces
     {
         // El método recibe la interfaz del Query y devuelve una colección de DTOs
         Task<IEnumerable<EventDto>> GetEventsAsync(IGetEventsQuery query);
+        Task<EventDto> CreateEventAsync(CreateEventCommand command);
 
     }
 }

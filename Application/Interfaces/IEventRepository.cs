@@ -11,5 +11,6 @@ namespace Application.Interfaces
     {
         // Definimos el contrato: quien implemente esto DEBE tener un método para traer eventos
         Task<IEnumerable<Event>> GetAllEventsAsync();
+        Task AddAsync(Event newEvent);
     }
 }
