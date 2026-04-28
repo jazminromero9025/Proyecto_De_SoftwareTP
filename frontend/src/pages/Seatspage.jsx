@@ -22,7 +22,7 @@ export default function SeatsPage({ event, onBack }) {
     };
 
     useEffect(() => {
-        fetch(`${API}/api/Sector/event/${event.id}`)
+        fetch(`${API}/api/v1/events/${event.id}/sectors`)
             .then((r) => r.json())
             .then(async (data) => {
                 setSectors(data);

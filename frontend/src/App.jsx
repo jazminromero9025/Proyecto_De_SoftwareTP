@@ -12,9 +12,18 @@ export default function App() {
     return (
         <div className="app">
             {!selectedEvent ? (
-                <EventsPage onSelectEvent={setSelectedEvent} />
+                <EventsPage
+                    onSelectEvent={setSelectedEvent}
+                    user={user}
+                    onLogout={() => setUser(null)}
+                />
             ) : (
-                <SeatsPage event={selectedEvent} user={user} onBack={() => setSelectedEvent(null)} />
+                <SeatsPage
+                    event={selectedEvent}
+                    user={user}
+                    onBack={() => setSelectedEvent(null)}
+                    onLogout={() => setUser(null)}
+                />
             )}
         </div>
     );

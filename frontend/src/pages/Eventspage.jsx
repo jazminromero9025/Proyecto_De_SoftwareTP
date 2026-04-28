@@ -2,7 +2,7 @@
 
 const API = "https://localhost:7016";
 
-export default function EventsPage({ onSelectEvent }) {
+export default function EventsPage({ onSelectEvent, user, onLogout }) {
     const [events, setEvents] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -20,6 +20,10 @@ export default function EventsPage({ onSelectEvent }) {
                 <div className="header-inner">
                     <span className="logo">🎟 TicketApp</span>
                     <h1 className="title">Eventos disponibles</h1>
+                    <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: "1rem" }}>
+                        <span style={{ color: "var(--text2)", fontSize: "0.875rem" }}>Hola, {user.name}</span>
+                        <button className="back-btn" onClick={onLogout}>Cerrar sesión</button>
+                    </div>
                 </div>
             </header>
 
