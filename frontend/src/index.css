@@ -125,7 +125,29 @@ body {
     align-items: center;
     gap: 1.25rem;
     transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
 }
+
+    .event-card::after {
+        content: "Comprar entradas";
+        position: absolute;
+        inset: 0;
+        background: var(--accent);
+        color: #000;
+        font-family: 'Syne', sans-serif;
+        font-weight: 700;
+        font-size: 1.1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: opacity 0.25s ease;
+    }
+
+    .event-card:hover::after {
+        opacity: 1;
+    }
 
     .event-card:hover {
         border-color: var(--accent);
