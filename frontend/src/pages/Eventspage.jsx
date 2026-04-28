@@ -8,7 +8,7 @@ export default function EventsPage({ onSelectEvent }) {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        fetch(`${API}/api/Events`)
+        fetch(`${API}/api/v1/Events`)
             .then((r) => r.json())
             .then((data) => { setEvents(data); setLoading(false); })
             .catch(() => { setError("No se pudo conectar con el servidor."); setLoading(false); });
