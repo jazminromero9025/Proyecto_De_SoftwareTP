@@ -7,7 +7,30 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+<<<<<<< HEAD
 // Cadena de conexión y DbContext
+=======
+// "Cada vez que alguien pida un ISeatRepository, dale un SeatRepository"
+builder.Services.AddScoped<ISeatRepository, SeatRepository>();
+
+builder.Services.AddScoped<ISeatService, SeatService>();
+
+
+
+builder.Services.AddScoped<IEventService, EventService>();
+builder.Services.AddScoped<IEventRepository, EventRepository>();
+
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IUserService, UserService>();
+
+// Registrar el Repositorio
+builder.Services.AddScoped<ISectorRepository, SectorRepository>();
+
+// Registrar el Service
+builder.Services.AddScoped<ISectorService, SectorService>();
+
+// Obtener cadena de conexión
+>>>>>>> origin/endpointsrocio
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(connectionString));
