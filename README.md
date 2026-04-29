@@ -38,10 +38,11 @@ La API estará disponible en: https://localhost:7016 (Swagger UI: /swagger).
 Roles y Usuarios de Prueba
 El sistema se inicializa con perfiles precargados para facilitar la evaluación:
 
-Usuario | Email          | Contraseña | Rol
-Maria   | maria@test.com | hash123    | Cliente de prueba (recomendado)
-Juan    | juan@test.com  | hash123    | Cliente de prueba
-Carlos  | carlos@test.com| hash123    | Administrador
+| Usuario | Email | Contraseña | Rol |
+| :--- | :--- | :--- | :--- |
+| **María** | maria@test.com | hash123 | Cliente de prueba (Recomendado) |
+| **Juan** | juan@test.com | hash123 | Cliente de prueba |
+| **Carlos** | carlos@test.com | hash123 | Administrador |
 
 
 Nota sobre el Admin: Aunque el sistema ya contempla el rol administrador en la base de datos para futuras gestiones, 
