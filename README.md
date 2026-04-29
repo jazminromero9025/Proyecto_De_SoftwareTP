@@ -2,7 +2,7 @@ TicketApp - Sistema de Gestión de Eventos
 Proyecto desarrollado para la materia Software Project. La aplicación es una plataforma robusta que permite gestionar la reserva de butacas para eventos específicos, organizados por sectores, aplicando Arquitectura Hexagonal.
 
 Integrantes
-Rocio Jazmin Romero
+Rocio Jazmin Romero,
 Matias Cruz
 
 
@@ -13,15 +13,14 @@ cd Proyecto_De_SoftwareTP
 
 
 2. Configuración y Ejecución del Backend (.NET 8)
-Abrir la solución Proyecto_De_SoftwareTP.sln en Visual Studio.
+ 1.Abrir la solución Proyecto_De_SoftwareTP.sln en Visual Studio.
 
-Verificar en API/appsettings.json la cadena de conexión:
-json
-"ConnectionStrings": {
+ Verificar en API/appsettings.json la cadena de conexión:
+ "ConnectionStrings": {
   "DefaultConnection": "Server=(localdb)\\MSSQLLocalDB;Database=TicketingDB;Trusted_Connection=True;TrustServerCertificate=True"
 } 
 
-2. Configuración y Ejecución del Backend
+ 2. Configuración y Ejecución del Backend
 Abrir la solución Proyecto_De_SoftwareTP.sln en Visual Studio.
 Presionar F5.
 El sistema está configurado para crear la base de datos, aplicar migraciones y cargar datos de prueba automáticamente al iniciar.
