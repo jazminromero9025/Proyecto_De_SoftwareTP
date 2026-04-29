@@ -48,7 +48,7 @@ export default function SeatsPage({ event, onBack }) {
             });
 
             if (res.ok) {
-                setMessage({ type: "success", text: `✅ Butaca ${seat.seatNumber} reservada exitosamente. Tenés 5 minutos para completar el pago.` });
+                setMessage({ type: "success", text: `✅ Butaca ${seat.number} reservada exitosamente. Tenés 5 minutos para completar el pago.` });
                 await fetchSeats(sectors);
             } else if (res.status === 409) {
                 setMessage({ type: "error", text: "⚠️ Esa butaca ya fue reservada por otro usuario." });
@@ -99,16 +99,16 @@ export default function SeatsPage({ event, onBack }) {
                         <h3 className="sector-title">{sectorName}</h3>
                         <div className="seats-grid">
                             {seats
-                                .sort((a, b) => a.seatNumber - b.seatNumber)
+                                .sort((a, b) => a.Number - b.Number)
                                 .map((seat) => (
                                     <button
                                         key={seat.id}
                                         className={`seat ${seat.status.toLowerCase()} ${reserving === seat.id ? "loading" : ""}`}
                                         onClick={() => handleReserve(seat)}
                                         disabled={seat.status !== "Available" || reserving !== null}
-                                        title={`Butaca ${seat.seatNumber} - ${seat.status}`}
+                                        title={`Butaca ${seat.Number} - ${seat.status}`}
                                     >
-                                        {reserving === seat.id ? "..." : seat.seatNumber}
+                                        {reserving === seat.id ? "..." : seat.Number}
                                     </button>
                                 ))}
                         </div>
