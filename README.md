@@ -72,7 +72,8 @@ Base de Datos: SQL Server / Entity Framework Core
 Arquitectura: Hexagonal (Clean Architecture)
 Documentación: Swagger / OpenAPI
 
-
+## 📊 Modelo de Datos
+![Diagrama de Base de Datos](./Diagrama-bd.jpeg)
 
 
 
