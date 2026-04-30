@@ -19,6 +19,16 @@ public class SeatsController : ControllerBase
         // 2. Simplemente le dice al Service: "Tomá, procesá esto"
         var result = await _seatService.GetSeatsBySectorAsync(sectorId);
 
+        // VALIDACIÓN CLAVE:
+        // Si el resultado es null o la lista está vacía, 
+        // asumimos que el sector no existe
+        if (result == null || !result.Any())
+        {
+            
+            return NotFound($"No se encontró el sector con ID {sectorId}");
+        }
+
+        // Si llegamos acá, es porque hay datos
         return Ok(result);
     }
 }
