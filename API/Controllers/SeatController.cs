@@ -15,9 +15,10 @@ public class SeatsController : ControllerBase
     [HttpGet("{sectorId}/seats")]
     public async Task<IActionResult> GetBySector(int sectorId)
     {
-        // 1. El Controller recibe el dato (sectorId)
-        // 2. Simplemente le dice al Service: "Tomá, procesá esto"
         var result = await _seatService.GetSeatsBySectorAsync(sectorId);
+
+        if (result == null || !result.Any())
+            return NotFound(new { message = $"No se encontraron butacas para el sector {sectorId}." });
 
         return Ok(result);
     }
