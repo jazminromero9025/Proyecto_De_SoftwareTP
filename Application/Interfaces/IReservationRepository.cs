@@ -14,5 +14,6 @@ namespace Application.Interfaces
     {
         Task<Reservation> CreateReservationAsync(CreateReservationCommand command);
         Task<PaymentConfirmationDto> ConfirmPaymentAsync(Guid reservationId);
+        Task<BulkPaymentConfirmationDto> ConfirmBulkPaymentAsync(List<Guid> reservationIds);
     }
 }
