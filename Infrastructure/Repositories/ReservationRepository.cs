@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using Application.Interfaces;
+﻿using Application.Interfaces;
+using Application.Models;
 using Application.UseCases.Reservations.Commands;
 using Domain.Entities;
 using Infrastructure.Persistence;
@@ -70,6 +65,58 @@ namespace Infrastructure.Repositories
             }
 
             return reservation;
+        }
+
+        public async Task<PaymentConfirmationDto> ConfirmPaymentAsync(Guid reservationId)
+        {
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try
+            {
+                var reservation = await _context.Reservations
+                    .Include(r => r.Seat)
+                    .FirstOrDefaultAsync(r => r.Id == reservationId);
+
+                if (reservation == null)
+                    throw new KeyNotFoundException("Reserva no encontrada");
+
+                if (reservation.Status != "Pending")
+                    throw new InvalidOperationException("La reserva no está en estado pendiente");
+
+                if (reservation.ExpiresAt < DateTime.UtcNow)
+                    throw new InvalidOperationException("La reserva ha expirado");
+
+                reservation.Status = "Paid";
+                reservation.Seat.Status = "Sold";
+
+                var audit = new AuditLog
+                {
+                    Id = Guid.NewGuid(),
+                    UserId = reservation.UserId,
+                    Action = "PAYMENT_SUCCESS",
+                    EntityType = "Reservation",
+                    EntityId = reservation.Id.ToString(),
+                    Details = $"Pago confirmado para reserva {reservation.Id}, butaca {reservation.SeatId}",
+                    CreatedAt = DateTime.UtcNow
+                };
+
+                _context.AuditLogs.Add(audit);
+
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                return new PaymentConfirmationDto
+                {
+                    ReservationId = reservation.Id,
+                    SeatId = reservation.SeatId,
+                    Status = reservation.Status,
+                    PaidAt = DateTime.UtcNow
+                };
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
         }
     }
 }

@@ -34,5 +34,10 @@ namespace Application.Services
                 ExpiresAt = reservation.ExpiresAt
             };
         }
+
+        public async Task<PaymentConfirmationDto> ConfirmPaymentAsync(Guid reservationId)
+        {
+            return await _reservationRepository.ConfirmPaymentAsync(reservationId);
+        }
     }
 }

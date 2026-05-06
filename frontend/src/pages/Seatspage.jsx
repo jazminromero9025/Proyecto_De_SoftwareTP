@@ -1,15 +1,16 @@
-﻿import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 const API = "https://localhost:7016";
-const USER_ID = 1;
 
-export default function SeatsPage({ event, onBack }) {
+export default function SeatsPage({ event, user, onBack }) {
     const [sectors, setSectors] = useState([]);
     const [seatsBySector, setSeatsBySector] = useState({});
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [reserving, setReserving] = useState(null);
+    const [paying, setPaying] = useState(false);
     const [message, setMessage] = useState(null);
+    const [pendingReservation, setPendingReservation] = useState(null);
 
     const fetchSeats = async (sectorList) => {
         const result = {};
@@ -39,16 +40,19 @@ export default function SeatsPage({ event, onBack }) {
         if (seat.status !== "Available") return;
         setReserving(seat.id);
         setMessage(null);
+        setPendingReservation(null);
 
         try {
             const res = await fetch(`${API}/api/v1/reservations`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ seatId: seat.id, userId: USER_ID }),
+                body: JSON.stringify({ seatId: seat.id, userId: user.id }),
             });
 
             if (res.ok) {
-                setMessage({ type: "success", text: `✅ Butaca ${seat.number} reservada exitosamente. Tenés 5 minutos para completar el pago.` });
+                const data = await res.json();
+                setPendingReservation({ id: data.id, seatNumber: seat.number, expiresAt: data.expiresAt });
+                setMessage({ type: "success", text: `✅ Butaca ${seat.number} reservada. Tenés 5 minutos para confirmar el pago.` });
                 await fetchSeats(sectors);
             } else if (res.status === 409) {
                 setMessage({ type: "error", text: "⚠️ Esa butaca ya fue reservada por otro usuario." });
@@ -60,6 +64,35 @@ export default function SeatsPage({ event, onBack }) {
             setMessage({ type: "error", text: "❌ Error de conexión con el servidor." });
         } finally {
             setReserving(null);
+        }
+    };
+
+    const handleConfirmPayment = async () => {
+        if (!pendingReservation) return;
+        setPaying(true);
+        setMessage(null);
+
+        try {
+            const res = await fetch(`${API}/api/v1/reservations/${pendingReservation.id}/confirm-payment`, {
+                method: "POST",
+            });
+
+            if (res.ok) {
+                setMessage({ type: "success", text: `🎉 ¡Pago confirmado! La butaca ${pendingReservation.seatNumber} es tuya.` });
+                setPendingReservation(null);
+                await fetchSeats(sectors);
+            } else if (res.status === 409) {
+                const body = await res.json();
+                setMessage({ type: "error", text: `⚠️ ${body.message}` });
+                setPendingReservation(null);
+                await fetchSeats(sectors);
+            } else {
+                setMessage({ type: "error", text: "❌ No se pudo confirmar el pago." });
+            }
+        } catch {
+            setMessage({ type: "error", text: "❌ Error de conexión con el servidor." });
+        } finally {
+            setPaying(false);
         }
     };
 
@@ -84,6 +117,21 @@ export default function SeatsPage({ event, onBack }) {
                     <div className={`toast ${message.type}`}>{message.text}</div>
                 )}
 
+                {pendingReservation && (
+                    <div className="payment-panel">
+                        <p className="payment-text">
+                            💳 Reserva pendiente — Butaca <strong>{pendingReservation.seatNumber}</strong>
+                        </p>
+                        <button
+                            className="pay-btn"
+                            onClick={handleConfirmPayment}
+                            disabled={paying}
+                        >
+                            {paying ? "Procesando..." : "Confirmar Pago"}
+                        </button>
+                    </div>
+                )}
+
                 <div className="legend">
                     <span className="legend-item"><span className="dot available" />Disponible ({available})</span>
                     <span className="legend-item"><span className="dot reserved" />Reservada</span>
@@ -105,7 +153,7 @@ export default function SeatsPage({ event, onBack }) {
                                         key={seat.id}
                                         className={`seat ${seat.status.toLowerCase()} ${reserving === seat.id ? "loading" : ""}`}
                                         onClick={() => handleReserve(seat)}
-                                        disabled={seat.status !== "Available" || reserving !== null}
+                                        disabled={seat.status !== "Available" || reserving !== null || paying}
                                         title={`Butaca ${seat.Number} - ${seat.status}`}
                                     >
                                         {reserving === seat.id ? "..." : seat.Number}

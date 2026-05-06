@@ -469,3 +469,48 @@ body {
         opacity: 0.6;
         cursor: wait;
     }
+
+/* PAYMENT PANEL */
+.payment-panel {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.5rem;
+    background: rgba(255, 107, 53, 0.08);
+    border: 1px solid rgba(255, 107, 53, 0.35);
+    border-radius: var(--radius);
+    animation: slideIn 0.3s ease;
+    flex-wrap: wrap;
+}
+
+.payment-text {
+    font-size: 0.9rem;
+    color: var(--text);
+}
+
+.pay-btn {
+    background: var(--accent2);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 0.6rem 1.4rem;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+    .pay-btn:hover:not(:disabled) {
+        background: #ff8255;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 16px rgba(255, 107, 53, 0.35);
+    }
+
+    .pay-btn:disabled {
+        opacity: 0.6;
+        cursor: wait;
+    }
