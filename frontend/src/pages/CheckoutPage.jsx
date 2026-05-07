@@ -7,6 +7,7 @@ export default function CheckoutPage({ reservations, onBack, onSuccess }) {
     const [paying, setPaying] = useState(false);
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(false);
+    const [expired, setExpired] = useState(false);
 
     const total = reservations.reduce((sum, r) => sum + r.price, 0);
     const earliestExpiry = reservations.reduce(
@@ -27,9 +28,15 @@ export default function CheckoutPage({ reservations, onBack, onSuccess }) {
 
             if (res.ok) {
                 setSuccess(true);
-            } else {
+            } else if (res.status === 409) {
                 const body = await res.json();
-                setError(body.message || "No se pudo procesar el pago.");
+                if (body.message?.toLowerCase().includes("expir")) {
+                    setExpired(true);
+                } else {
+                    setError(body.message || "No se pudo procesar el pago.");
+                }
+            } else {
+                setError("No se pudo procesar el pago.");
             }
         } catch {
             setError("Error de conexión con el servidor.");
@@ -62,6 +69,16 @@ export default function CheckoutPage({ reservations, onBack, onSuccess }) {
 
     return (
         <div className="page">
+            {expired && (
+                <div className="modal-overlay">
+                    <div className="modal">
+                        <div className="modal-icon">⏰</div>
+                        <h2 className="modal-title">La reserva expiró</h2>
+                        <p className="modal-text">El tiempo para completar el pago venció. Tenés que volver a seleccionar las butacas.</p>
+                        <button className="modal-btn" onClick={onBack}>Volver a seleccionar butacas</button>
+                    </div>
+                </div>
+            )}
             <header className="header">
                 <div className="header-inner">
                     <button className="back-btn" onClick={onBack}>← Volver</button>
