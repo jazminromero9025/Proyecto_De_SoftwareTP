@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import CountdownTimer from "../components/CountdownTimer";
 
 const API = "https://localhost:7016";
 
@@ -51,9 +52,9 @@ export default function SeatsPage({ event, user, onBack, onCheckout }) {
                 const data = await res.json();
                 setPendingReservations((prev) => [
                     ...prev,
-                    { reservationId: data.id, seatNumber: seat.Number, sectorName, price },
+                    { reservationId: data.id, seatNumber: seat.number, sectorName, price, expiresAt: data.expiresAt },
                 ]);
-                setMessage({ type: "success", text: `✅ Butaca ${seat.Number} agregada al carrito.` });
+                setMessage({ type: "success", text: `✅ Butaca ${seat.number} agregada al carrito.` });
                 await fetchSeats(sectors);
             } else if (res.status === 409) {
                 setMessage({ type: "error", text: "⚠️ Esa butaca ya fue reservada por otro usuario." });
@@ -119,9 +120,9 @@ export default function SeatsPage({ event, user, onBack, onCheckout }) {
                                             className={`seat ${seat.status.toLowerCase()} ${reserving === seat.id ? "loading" : ""}`}
                                             onClick={() => handleReserve(seat, sectorName, price)}
                                             disabled={seat.status !== "Available" || reserving !== null}
-                                            title={`Butaca ${seat.Number} - ${seat.status}`}
+                                            title={`Butaca ${seat.number} - ${seat.status}`}
                                         >
-                                            {reserving === seat.id ? "..." : seat.Number}
+                                            {reserving === seat.id ? "..." : seat.number}
                                         </button>
                                     ))}
                             </div>
@@ -138,6 +139,7 @@ export default function SeatsPage({ event, user, onBack, onCheckout }) {
                             {pendingReservations.map((r) => r.seatNumber).join(", ")}
                         </span>
                     </div>
+                    <CountdownTimer expiresAt={pendingReservations[0].expiresAt} />
                     <div className="cart-right">
                         <span className="cart-total">${cartTotal.toFixed(2)}</span>
                         <button className="cart-btn" onClick={() => onCheckout(pendingReservations)}>

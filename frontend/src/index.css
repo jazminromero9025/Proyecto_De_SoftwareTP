@@ -560,6 +560,64 @@ body {
         box-shadow: 0 4px 20px rgba(200, 255, 0, 0.3);
     }
 
+/* COUNTDOWN TIMER */
+.countdown {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.1rem;
+}
+
+.countdown-label {
+    font-size: 0.7rem;
+    color: var(--text2);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.countdown-time {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.4rem;
+    color: var(--text);
+    letter-spacing: 0.05em;
+    transition: color 0.3s;
+}
+
+    .countdown-time.urgent {
+        color: var(--reserved);
+        animation: pulse 1s infinite;
+    }
+
+    .countdown-time.expired {
+        color: var(--sold);
+    }
+
+.countdown-expired {
+    font-size: 0.75rem;
+    color: var(--sold);
+    font-weight: 600;
+    margin-top: 0.1rem;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+/* En checkout el timer se ve más grande y centrado */
+.checkout-card .countdown {
+    margin: 1.5rem 0;
+    padding: 1rem;
+    background: rgba(255, 159, 28, 0.06);
+    border: 1px solid rgba(255, 159, 28, 0.2);
+    border-radius: var(--radius);
+}
+
+.checkout-card .countdown-time {
+    font-size: 2rem;
+}
+
 /* CHECKOUT */
 .checkout-main {
     display: flex;

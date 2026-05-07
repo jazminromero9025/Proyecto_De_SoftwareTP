@@ -1,4 +1,5 @@
 import { useState } from "react";
+import CountdownTimer from "../components/CountdownTimer";
 
 const API = "https://localhost:7016";
 
@@ -8,6 +9,10 @@ export default function CheckoutPage({ reservations, onBack, onSuccess }) {
     const [success, setSuccess] = useState(false);
 
     const total = reservations.reduce((sum, r) => sum + r.price, 0);
+    const earliestExpiry = reservations.reduce(
+        (min, r) => new Date(r.expiresAt) < new Date(min) ? r.expiresAt : min,
+        reservations[0]?.expiresAt
+    );
 
     const handleConfirm = async () => {
         setPaying(true);
@@ -94,7 +99,9 @@ export default function CheckoutPage({ reservations, onBack, onSuccess }) {
                         </tfoot>
                     </table>
 
-                    {error && <div className="toast error" style={{ marginTop: "1.5rem" }}>{error}</div>}
+                    <CountdownTimer expiresAt={earliestExpiry} />
+
+                    {error && <div className="toast error" style={{ marginTop: "1rem" }}>{error}</div>}
 
                     <button
                         className="pay-btn checkout-pay-btn"
