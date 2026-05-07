@@ -1,14 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using Application.Interfaces;
+﻿using Application.Interfaces;
 using Application.UseCases.Reservations.Commands;
 using Domain.Entities;
 using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Infrastructure.Repositories
 {
@@ -33,7 +34,7 @@ namespace Infrastructure.Repositories
                 throw new InvalidOperationException("La butaca no está disponible");
 
             seat.Status = "Reserved";
-            seat.Version++;
+            seat.Version++; // Al cambiar esto, cualquier otro proceso con la versión vieja va a fallar al guardar
 
             var reservation = new Reservation
             {

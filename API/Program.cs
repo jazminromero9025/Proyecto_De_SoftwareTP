@@ -3,6 +3,7 @@ using Application.Services;
 using Infraestructure.Repositories;
 using Infrastructure.Persistence;
 using Infrastructure.Repositories;
+using Infrastructure.Workes;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -26,6 +27,10 @@ builder.Services.AddCors(options =>
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddHostedService<ReservationExpirationWorker>();
+
+
 
 // Servicios de Rocío
 builder.Services.AddScoped<ISeatRepository, SeatRepository>();
