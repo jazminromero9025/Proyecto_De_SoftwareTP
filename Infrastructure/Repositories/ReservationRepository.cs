@@ -48,18 +48,6 @@ namespace Infrastructure.Repositories
 
             _context.Reservations.Add(reservation);
 
-            var audit = new AuditLog
-            {
-                Id = Guid.NewGuid(),
-                UserId = command.UserId,
-                Action = "RESERVE_SUCCESS",
-                EntityType = "Reservation",
-                EntityId = reservation.Id.ToString(),
-                Details = $"Butaca {command.SeatId} reservada por usuario {command.UserId}",
-                CreatedAt = DateTime.UtcNow
-            };
-
-            _context.AuditLogs.Add(audit);
 
             try
             {
@@ -72,5 +60,26 @@ namespace Infrastructure.Repositories
 
             return reservation;
         }
+
+
+        public async Task CreateAuditLogAsync(CreateAuditLogCommand command)
+        {
+            var audit = new AuditLog
+            {
+                Id = Guid.NewGuid(),
+                UserId = command.UserId,
+                Action = command.Action,
+                EntityType = command.EntityType,
+                EntityId = command.EntityId,
+                Details = command.Details,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            _context.AuditLogs.Add(audit);
+
+            await _context.SaveChangesAsync();
+        }
+
+
     }
 }
