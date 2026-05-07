@@ -18,6 +18,7 @@ namespace Infraestructure.Repositories
         public async Task<IEnumerable<Seat>> GetSeatsBySectorQueryAsync(GetSeatsBySectorQuery query)
         {
             return await _context.Seats
+                .Include(s => s.Reservations)
                 .Where(s => s.SectorId == query.SectorId)
                 .ToListAsync();
         }

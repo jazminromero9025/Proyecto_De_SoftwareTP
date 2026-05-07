@@ -8,6 +8,7 @@ export default function App() {
     const [user, setUser] = useState(null);
     const [selectedEvent, setSelectedEvent] = useState(null);
     const [checkout, setCheckout] = useState(null);
+    const [seatsKey, setSeatsKey] = useState(0);
 
     if (!user) return <LoginPage onLogin={setUser} />;
 
@@ -15,7 +16,7 @@ export default function App() {
         return (
             <CheckoutPage
                 reservations={checkout}
-                onBack={() => setCheckout(null)}
+                onBack={() => { setCheckout(null); setSeatsKey(k => k + 1); }}
                 onSuccess={() => { setCheckout(null); setSelectedEvent(null); }}
             />
         );
@@ -31,6 +32,7 @@ export default function App() {
                 />
             ) : (
                 <SeatsPage
+                    key={seatsKey}
                     event={selectedEvent}
                     user={user}
                     onBack={() => setSelectedEvent(null)}
