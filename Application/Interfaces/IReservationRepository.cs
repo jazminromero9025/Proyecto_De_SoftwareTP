@@ -12,5 +12,7 @@ namespace Application.Interfaces
     public interface IReservationRepository
     {
         Task<Reservation> CreateReservationAsync(CreateReservationCommand command);
+        Task CreateAuditLogAsync(CreateAuditLogCommand command);
+
     }
 }
