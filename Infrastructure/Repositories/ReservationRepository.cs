@@ -44,7 +44,7 @@ namespace Infrastructure.Repositories
                 UserId = command.UserId,
                 Status = "Pending",
                 ReservedAt = DateTime.UtcNow,
-                ExpiresAt = DateTime.UtcNow.AddSeconds(6)
+                ExpiresAt = DateTime.UtcNow.AddMinutes(5)
             };
 
             _context.Reservations.Add(reservation);
