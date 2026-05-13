@@ -2,7 +2,7 @@
 
 const API = "https://localhost:7016";
 
-export default function EventsPage({ onSelectEvent, user, onLogout }) {
+export default function EventsPage({ onSelectEvent, user, onLogout, onCreateEvent }) {
     const [events, setEvents] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -22,6 +22,9 @@ export default function EventsPage({ onSelectEvent, user, onLogout }) {
                     <h1 className="title">Eventos disponibles</h1>
                     <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: "1rem" }}>
                         <span style={{ color: "var(--text2)", fontSize: "0.875rem" }}>Hola, {user.name}</span>
+                        {user.role === "Administrador" && (
+                            <button className="cart-btn" onClick={onCreateEvent}>+ Crear evento</button>
+                        )}
                         <button className="back-btn" onClick={onLogout}>Cerrar sesión</button>
                     </div>
                 </div>

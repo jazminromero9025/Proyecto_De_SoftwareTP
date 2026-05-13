@@ -10,5 +10,6 @@ namespace Application.Interfaces
     public interface ISectorService
     {
         Task<List<SectorDto>> GetSectorsByEventAsync(int eventId);
+        Task<SectorDto> CreateSectorAsync(int eventId, string name, decimal price, int capacity);
     }
 }

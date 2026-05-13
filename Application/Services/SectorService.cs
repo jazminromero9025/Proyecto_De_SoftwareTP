@@ -1,11 +1,7 @@
 ﻿using Application.Interfaces;
 using Application.Models;
 using Application.UseCases.Sectors;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Domain.Entities;
 
 namespace Application.Services
 {
@@ -22,12 +18,37 @@ namespace Application.Services
 
         public async Task<List<SectorDto>> GetSectorsByEventAsync(int eventId)
         {
-            // Usamos la interfaz para la variable, pero instanciamos la clase
             IGetSectorsByEventQuery query = new GetSectorsByEventQuery();
-
             return await query.Execute(_sectorRepository, eventId);
         }
 
+        public async Task<SectorDto> CreateSectorAsync(int eventId, string name, decimal price, int capacity)
+        {
+            var sector = new Sector
+            {
+                EventId = eventId,
+                Name = name,
+                Price = price,
+                Capacity = capacity,
+                Seats = Enumerable.Range(1, capacity).Select(i => new Seat
+                {
+                    Id = Guid.NewGuid(),
+                    SeatNumber = i,
+                    RowIdentifier = "A",
+                    Status = "Available",
+                    Version = 0
+                }).ToList()
+            };
 
+            var created = await _sectorRepository.CreateSectorAsync(sector);
+
+            return new SectorDto
+            {
+                Id = created.Id,
+                Name = created.Name,
+                Price = created.Price,
+                EventId = created.EventId
+            };
+        }
     }
 }

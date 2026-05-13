@@ -3,14 +3,20 @@ import LoginPage from "./pages/LoginPage";
 import EventsPage from "./pages/EventsPage";
 import SeatsPage from "./pages/SeatsPage";
 import CheckoutPage from "./pages/CheckoutPage";
+import AdminCreateEventPage from "./pages/AdminCreateEventPage";
 
 export default function App() {
     const [user, setUser] = useState(null);
     const [selectedEvent, setSelectedEvent] = useState(null);
     const [checkout, setCheckout] = useState(null);
     const [seatsKey, setSeatsKey] = useState(0);
+    const [creatingEvent, setCreatingEvent] = useState(false);
 
     if (!user) return <LoginPage onLogin={setUser} />;
+
+    if (creatingEvent) {
+        return <AdminCreateEventPage onBack={() => setCreatingEvent(false)} />;
+    }
 
     if (checkout) {
         return (
@@ -29,6 +35,7 @@ export default function App() {
                     onSelectEvent={setSelectedEvent}
                     user={user}
                     onLogout={() => setUser(null)}
+                    onCreateEvent={() => setCreatingEvent(true)}
                 />
             ) : (
                 <SeatsPage
