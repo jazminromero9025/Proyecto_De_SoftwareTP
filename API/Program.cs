@@ -1,7 +1,6 @@
 using Application.Interfaces;
 using Application.Services;
 using Infraestructure.Repositories;
-using Infrastructure.BackgroundServices;
 using Infrastructure.Persistence;
 using Infrastructure.Repositories;
 using Infrastructure.Workes;
@@ -44,7 +43,6 @@ builder.Services.AddScoped<ISectorService, SectorService>();
 // Servicios de Mat�as
 builder.Services.AddScoped<IReservationRepository, ReservationRepository>();
 builder.Services.AddScoped<IReservationService, ReservationService>();
-builder.Services.AddHostedService<ReservationExpiryService>();
 
 var app = builder.Build();
 

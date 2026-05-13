@@ -28,38 +28,51 @@ namespace Infrastructure.Workes
                 {
                     var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
-                    // Buscamos lo que venció
-                    var now = DateTime.UtcNow;
-                    var expiredReservations = await context.Reservations
-                        .Include(r => r.Seat)
-                        .Where(r => r.Status == "Pending" && r.ExpiresAt < now)
-                        .ToListAsync();
+                    // 1. Iniciamos la transacción para que todo sea "todo o nada"
+                    using var transaction = await context.Database.BeginTransactionAsync(stoppingToken);
 
-                    if (expiredReservations.Any())
+                    try
                     {
-                        foreach (var res in expiredReservations)
+                        var now = DateTime.UtcNow;
+                        var expiredReservations = await context.Reservations
+                            .Include(r => r.Seat)
+                            .Where(r => r.Status == "Pending" && r.ExpiresAt < now)
+                            .ToListAsync(stoppingToken);
+
+                        if (expiredReservations.Any())
                         {
-                            res.Status = "Expired";
-                            if (res.Seat != null)
+                            foreach (var res in expiredReservations)
                             {
-                                res.Seat.Status = "Available";
-                                res.Seat.Version++; // Mantenemos la lógica de concurrencia
+                                res.Status = "Expired";
+                                if (res.Seat != null)
+                                {
+                                    res.Seat.Status = "Available";
+                                    res.Seat.Version++; 
+                                }
+
+                                context.AuditLogs.Add(new AuditLog
+                                {
+                                    Id = Guid.NewGuid(),
+                                    Action = "AUTO_RELEASE", 
+                                    Details = $"Liberación automática de butaca {res.SeatId}",
+                                    CreatedAt = now
+                                });
                             }
 
-                            context.AuditLogs.Add(new AuditLog
-                            {
-                                Id = Guid.NewGuid(),
-                                Action = "AUTO_RELEASE",
-                                Details = $"Liberación automática de butaca {res.SeatId}",
-                                CreatedAt = now
-                            });
-                        }
+                            await context.SaveChangesAsync(stoppingToken);
 
-                        await context.SaveChangesAsync();
+                            // 2. Si llegamos acá sin errores, confirmamos los cambios
+                            await transaction.CommitAsync(stoppingToken);
+                        }
+                    }
+                    catch (Exception)
+                    {
+                        // 3. Si algo falló, deshacemos todo para no dejar datos inconsistentes
+                        await transaction.RollbackAsync(stoppingToken);
+                        
                     }
                 }
 
-                // Espera 1 minuto antes de la siguiente vuelta
                 await Task.Delay(_checkInterval, stoppingToken);
             }
         }
