@@ -1,15 +1,16 @@
-﻿import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import CountdownTimer from "../components/CountdownTimer";
 
 const API = "https://localhost:7016";
-const USER_ID = 1;
 
-export default function SeatsPage({ event, onBack }) {
+export default function SeatsPage({ event, user, onBack, onCheckout }) {
     const [sectors, setSectors] = useState([]);
     const [seatsBySector, setSeatsBySector] = useState({});
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [reserving, setReserving] = useState(null);
     const [message, setMessage] = useState(null);
+    const [pendingReservations, setPendingReservations] = useState([]);
 
     const fetchSeats = async (sectorList) => {
         const result = {};
@@ -35,7 +36,7 @@ export default function SeatsPage({ event, onBack }) {
             });
     }, [event.id]);
 
-    const handleReserve = async (seat) => {
+    const handleReserve = async (seat, sectorName, price) => {
         if (seat.status !== "Available") return;
         setReserving(seat.id);
         setMessage(null);
@@ -44,11 +45,16 @@ export default function SeatsPage({ event, onBack }) {
             const res = await fetch(`${API}/api/v1/reservations`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ seatId: seat.id, userId: USER_ID }),
+                body: JSON.stringify({ seatId: seat.id, userId: user.id }),
             });
 
             if (res.ok) {
-                setMessage({ type: "success", text: `✅ Butaca ${seat.number} reservada exitosamente. Tenés 5 minutos para completar el pago.` });
+                const data = await res.json();
+                setPendingReservations((prev) => [
+                    ...prev,
+                    { reservationId: data.id, seatNumber: seat.number, sectorName, price, expiresAt: data.expiresAt },
+                ]);
+                setMessage({ type: "success", text: `✅ Butaca ${seat.number} agregada al carrito.` });
                 await fetchSeats(sectors);
             } else if (res.status === 409) {
                 setMessage({ type: "error", text: "⚠️ Esa butaca ya fue reservada por otro usuario." });
@@ -62,6 +68,8 @@ export default function SeatsPage({ event, onBack }) {
             setReserving(null);
         }
     };
+
+    const cartTotal = pendingReservations.reduce((sum, r) => sum + r.price, 0);
 
     const totalSeats = Object.values(seatsBySector).flat();
     const available = totalSeats.filter((s) => s.status === "Available").length;
@@ -94,27 +102,52 @@ export default function SeatsPage({ event, onBack }) {
                 {loading && <p className="status">Cargando mapa de asientos...</p>}
                 {error && <p className="status error">{error}</p>}
 
-                {Object.entries(seatsBySector).map(([sectorName, seats]) => (
-                    <div key={sectorName} className="sector">
-                        <h3 className="sector-title">{sectorName}</h3>
-                        <div className="seats-grid">
-                            {seats
-                                .sort((a, b) => a.Number - b.Number)
-                                .map((seat) => (
-                                    <button
-                                        key={seat.id}
-                                        className={`seat ${seat.status.toLowerCase()} ${reserving === seat.id ? "loading" : ""}`}
-                                        onClick={() => handleReserve(seat)}
-                                        disabled={seat.status !== "Available" || reserving !== null}
-                                        title={`Butaca ${seat.Number} - ${seat.status}`}
-                                    >
-                                        {reserving === seat.id ? "..." : seat.Number}
-                                    </button>
-                                ))}
+                {Object.entries(seatsBySector).map(([sectorName, seats]) => {
+                    const sector = sectors.find((s) => s.name === sectorName);
+                    const price = sector?.price ?? 0;
+                    return (
+                        <div key={sectorName} className="sector">
+                            <h3 className="sector-title">
+                                {sectorName}
+                                <span className="sector-price">${price.toFixed(2)} por entrada</span>
+                            </h3>
+                            <div className="seats-grid">
+                                {seats
+                                    .sort((a, b) => a.Number - b.Number)
+                                    .map((seat) => (
+                                        <button
+                                            key={seat.id}
+                                            className={`seat ${seat.status.toLowerCase()} ${reserving === seat.id ? "loading" : ""}`}
+                                            onClick={() => handleReserve(seat, sectorName, price)}
+                                            disabled={seat.status !== "Available" || reserving !== null}
+                                            title={`Butaca ${seat.number} - ${seat.status}`}
+                                        >
+                                            {reserving === seat.id ? "..." : seat.number}
+                                        </button>
+                                    ))}
+                            </div>
                         </div>
-                    </div>
-                ))}
+                    );
+                })}
             </main>
+
+            {pendingReservations.length > 0 && (
+                <div className="cart-bar">
+                    <div className="cart-info">
+                        <span className="cart-count">{pendingReservations.length} {pendingReservations.length === 1 ? "butaca" : "butacas"} seleccionadas</span>
+                        <span className="cart-seats">
+                            {pendingReservations.map((r) => r.seatNumber).join(", ")}
+                        </span>
+                    </div>
+                    <CountdownTimer expiresAt={pendingReservations[0].expiresAt} />
+                    <div className="cart-right">
+                        <span className="cart-total">${cartTotal.toFixed(2)}</span>
+                        <button className="cart-btn" onClick={() => onCheckout(pendingReservations)}>
+                            Ir al pago →
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

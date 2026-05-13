@@ -23,10 +23,16 @@ namespace Infrastructure.Repositories
 
         public async Task<List<Sector>> GetByEventIdAsync(int eventId)
         {
-            // Filtramos los sectores que pertenecen al evento
             return await _context.Sectors
                 .Where(s => s.EventId == eventId)
                 .ToListAsync();
+        }
+
+        public async Task<Sector> CreateSectorAsync(Sector sector)
+        {
+            _context.Sectors.Add(sector);
+            await _context.SaveChangesAsync();
+            return sector;
         }
 
 

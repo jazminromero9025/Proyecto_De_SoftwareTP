@@ -65,5 +65,15 @@ namespace Application.Services
             }
 
         }
+
+        public async Task<PaymentConfirmationDto> ConfirmPaymentAsync(Guid reservationId)
+        {
+            return await _reservationRepository.ConfirmPaymentAsync(reservationId);
+        }
+
+        public async Task<BulkPaymentConfirmationDto> ConfirmBulkPaymentAsync(List<Guid> reservationIds)
+        {
+            return await _reservationRepository.ConfirmBulkPaymentAsync(reservationIds);
+        }
     }
 }

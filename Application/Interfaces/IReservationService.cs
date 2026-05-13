@@ -11,5 +11,7 @@ namespace Application.Interfaces
     public interface IReservationService
     {
         Task<ReservationDto> CreateReservationAsync(Guid seatId, int userId);
+        Task<PaymentConfirmationDto> ConfirmPaymentAsync(Guid reservationId);
+        Task<BulkPaymentConfirmationDto> ConfirmBulkPaymentAsync(List<Guid> reservationIds);
     }
 }

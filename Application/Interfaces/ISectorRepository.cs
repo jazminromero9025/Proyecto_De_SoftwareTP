@@ -10,6 +10,7 @@ namespace Application.Interfaces
     public interface ISectorRepository
     {
         Task<List<Sector>> GetByEventIdAsync(int eventId);
+        Task<Sector> CreateSectorAsync(Sector sector);
 
     }
 }

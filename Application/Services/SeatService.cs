@@ -24,11 +24,19 @@ namespace Application.Services
             var seats = await _seatRepository.GetSeatsBySectorQueryAsync(query);
 
             // Mapeo de entidad a DTO
-            return seats.Select(s => new SeatDTO
+            return seats.Select(s =>
             {
-                Id = s.Id,
-                Number = s.SeatNumber,
-                Status = s.Status.ToString()
+                var effectiveStatus = s.Status == "Reserved" &&
+                    !s.Reservations.Any(r => r.Status == "Pending" && r.ExpiresAt > DateTime.UtcNow)
+                    ? "Available"
+                    : s.Status;
+
+                return new SeatDTO
+                {
+                    Id = s.Id,
+                    Number = s.SeatNumber,
+                    Status = effectiveStatus
+                };
             }).ToList();
         }
     }
